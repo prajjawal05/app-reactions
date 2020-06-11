@@ -1,0 +1,7 @@
+#wc-content .full-screen-icon{
+    display: none;
+}
+#wc-container-left {
+    height: 100%;
+    width: 100%;
+}
