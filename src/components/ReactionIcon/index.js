@@ -22,6 +22,6 @@ const IMAGE_REACTION_MAP = {
 
 
 export default ({ reactionType }) => {
-    const reactionProps = useMemo(() => IMAGE_REACTION_MAP[reactionType]);
+    const reactionProps = useMemo(() => IMAGE_REACTION_MAP[reactionType], [reactionType]);
     return (<img {...reactionProps} width={"80%"} />);
 };
