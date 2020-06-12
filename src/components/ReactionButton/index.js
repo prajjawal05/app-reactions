@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import Fab from "@material-ui/core/Fab"
 import { amber } from '@material-ui/core/colors';
 import { makeStyles } from '@material-ui/core/styles';
@@ -28,12 +28,18 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const ReactionButton = ({ reactionType }) => {
+const ReactionButton = ({ reactionType, onClick }) => {
+    const handleClick = useCallback(() => {
+        onClick(reactionType)
+    }, [reactionType, onClick]);
     const classes = useStyles();
+
     return (
-        <div className={classes.root}>
+        <div onClick={handleClick} className={classes.root}>
             <Fab className={classes.button}>
-                <ReactionIcon reactionType={reactionType}/>
+                <div>
+                    <ReactionIcon reactionType={reactionType}/>
+                </div>
             </Fab>
         </div>
     )
