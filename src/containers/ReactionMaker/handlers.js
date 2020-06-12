@@ -9,24 +9,24 @@ const DEFAULT_REACTION_COUNTS = Object.values(REACTION_TYPES).reduce((acc, react
  } , {})
 
 
+const sendDataToBackend = debounce((reactionToSend) => console.log(reactionToSend), 500);
+
 const withHandlers = WrappedComponent => props => {
     const [reactions, updateReactions] = useState(DEFAULT_REACTION_COUNTS);
     
-    const resetReactions = useCallback(() => {
-        updateReactions(DEFAULT_REACTION_COUNTS);    
-    }, [updateReactions]);
+    const resetReactions = useCallback(debounce(() => {
+        updateReactions(DEFAULT_REACTION_COUNTS);
+    }, 500), []);
 
-    const sendDataAndReset = useCallback(debounce((reactionToSend) => {
-        console.log(reactionToSend);
+    const sendAndResetReactions = useCallback(() => {
+        sendDataToBackend(reactions);
         resetReactions();
-    }), [resetReactions]);
-
-    // const debouncedSetDataAndReset = (sendDataAndReset, 500);
+    }, [resetReactions, reactions]);
 
     const handleReaction = useCallback((reactionType) => {
         updateReactions(reactions => ({...reactions, [reactionType]: reactions[reactionType]+1}));
-        sendDataAndReset(reactions);
-    }, [reactions, sendDataAndReset]);
+        sendAndResetReactions();
+    }, [reactions, sendAndResetReactions]);
 
     return <WrappedComponent onReact={handleReaction}/>
 };
