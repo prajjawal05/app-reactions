@@ -9,7 +9,14 @@ const DEFAULT_REACTION_COUNTS = Object.values(REACTION_TYPES).reduce((acc, react
  } , {})
 
 
-const sendDataToBackend = debounce((reactionToSend) => console.log(reactionToSend), 500);
+const sendDataToBackend = debounce((reactionToSend) => fetch('/react', {
+    method: 'POST',
+    body: JSON.stringify(reactionToSend),
+    headers: {
+      'Content-type': 'application/json; charset=UTF-8'
+    }
+  }), 
+500);
 
 const withHandlers = WrappedComponent => props => {
     const [reactions, updateReactions] = useState(DEFAULT_REACTION_COUNTS);
