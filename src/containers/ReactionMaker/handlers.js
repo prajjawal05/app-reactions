@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { debounce } from "debounce";
 import { REACTION_TYPES } from "../../config/constants";
 
@@ -9,24 +9,43 @@ const DEFAULT_REACTION_COUNTS = Object.values(REACTION_TYPES).reduce((acc, react
  } , {})
 
 
-const sendDataToBackend = debounce((reactionToSend) => fetch('/react', {
+ const sendReactionsToBackend = debounce((reactionToSend) => fetch('/react?op=update', {
     method: 'POST',
     body: JSON.stringify(reactionToSend),
     headers: {
       'Content-type': 'application/json; charset=UTF-8'
     }
   }), 
-500);
+10);
 
-const withHandlers = WrappedComponent => props => {
+const getPeerReactionsFromBackend = () => fetch('/react?op=get', {
+    method: 'POST',
+    body: {},
+    headers: {
+      'Content-type': 'application/json; charset=UTF-8'
+    }
+  });
+
+const withPeerReactions = WrappedComponent => props => {
+    const [peerReactions, updatePeerReactions] = useState(DEFAULT_REACTION_COUNTS);
+    setInterval(() => {
+        getPeerReactionsFromBackend()
+        .then(response => response.json())
+        .then(reactions => updatePeerReactions(reactions));
+    }, 3000);
+
+    return <WrappedComponent peerReactions={peerReactions}/>
+};
+
+const withReactionHandlers = WrappedComponent => props => {
     const [reactions, updateReactions] = useState(DEFAULT_REACTION_COUNTS);
     
     const resetReactions = useCallback(debounce(() => {
         updateReactions(DEFAULT_REACTION_COUNTS);
-    }, 500), []);
+    }, 20), []);
 
     const sendAndResetReactions = useCallback(() => {
-        sendDataToBackend(reactions);
+        sendReactionsToBackend(reactions);
         resetReactions();
     }, [resetReactions, reactions]);
 
@@ -35,7 +54,21 @@ const withHandlers = WrappedComponent => props => {
         sendAndResetReactions();
     }, [reactions, sendAndResetReactions]);
 
-    return <WrappedComponent onReact={handleReaction}/>
+    return <WrappedComponent ownReactions={reactions} onReact={handleReaction} {...props}/>
 };
 
-export default withHandlers;
+const withAddedReactions = WrappedComponent => ({peerReactions, ownReactions, ...restProps}) => {
+    const reactions = DEFAULT_REACTION_COUNTS;
+    useEffect(() => {
+        Object.keys(REACTION_TYPES).map(reactionType => {
+        reactions[reactionType] = peerReactions[reactionType] + ownReactions[reactionType];
+    })
+    },[peerReactions, ownReactions]);
+    return <WrappedComponent reactions={reactions} {...restProps}/>
+};
+
+export {
+    withPeerReactions,
+    withReactionHandlers,
+    withAddedReactions
+};

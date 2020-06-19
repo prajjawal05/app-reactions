@@ -25,10 +25,13 @@ const useStyles = makeStyles((theme) => ({
             width: "100%",
             height: "100%"
         }
+    },
+    count: {
+        textAlign: "center"
     }
 }));
 
-const ReactionButton = ({ reactionType, onClick }) => {
+const ReactionButton = ({ reactionType, reactionCount, onClick }) => {
     const handleClick = useCallback(() => {
         onClick(reactionType)
     }, [reactionType, onClick]);
@@ -39,6 +42,7 @@ const ReactionButton = ({ reactionType, onClick }) => {
             <Fab className={classes.button}>
                 <div>
                     <ReactionIcon reactionType={reactionType}/>
+                    <div className={classes.count}>{reactionCount}</div>
                 </div>
             </Fab>
         </div>
