@@ -12,6 +12,6 @@ export const APPS_CONFIG = {
 
 export const REACTION_TYPES = {
     CLAP: "CLAP",
-    APPRECIATE: "APRRECIATE",
+    APPRECIATE: "APPRECIATE",
     LAUGH: "LAUGH"
 };

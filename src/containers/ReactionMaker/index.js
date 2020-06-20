@@ -2,11 +2,7 @@ import React from "react";
 import ReactionButton from "../../components/ReactionButton";
 import { REACTION_TYPES } from "../../config/constants";
 
-import {
-    withPeerReactions,
-    withReactionHandlers,
-    withAddedReactions
-} from "./handlers";
+import withHandlers from "./handlers";
 
 const ReactionMaker = ({ onReact, reactions }) => (
     <div style={{display: "flex", justifyContent: "space-around", flexDirection: "column", marginLeft:"10px"}}>
@@ -16,4 +12,4 @@ const ReactionMaker = ({ onReact, reactions }) => (
     </div>
 );
 
-export default withPeerReactions(withReactionHandlers(withAddedReactions(ReactionMaker)));
+export default withHandlers(ReactionMaker);
