@@ -15,3 +15,11 @@ export const REACTION_TYPES = {
     APPRECIATE: "APPRECIATE",
     LAUGH: "LAUGH"
 };
+
+export const mobileAgents = [
+    /Android/i,
+    /iPhone/i,
+    /iPod/i,
+    /BlackBerry/i,
+    /Windows Phone/i
+  ]

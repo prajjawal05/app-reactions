@@ -9,7 +9,7 @@ const useStyles = makeStyles((theme) => ({
     root: {
         backgroundColor: theme.palette.background.paper,
         height: "201px",
-        width: "200px",
+        width: "201px",
         textAlign: "center"
     },
     button: {
