@@ -10,7 +10,7 @@ const DEFAULT_REACTION_COUNTS = Object.values(REACTION_TYPES).reduce((acc, react
  } , {})
 
 
- const sendReactionsToBackend = debounce(reactionToSend => fetch('https://d2vxsg0gkt3p4m.cloudfront.net/react?op=update', {
+ const sendReactionsToBackend = debounce(reactionToSend => fetch('/react?op=update', {
     method: 'POST',
     body: JSON.stringify(reactionToSend),
     headers: {
@@ -19,7 +19,7 @@ const DEFAULT_REACTION_COUNTS = Object.values(REACTION_TYPES).reduce((acc, react
   }), 
 200);
 
-const getPeerReactionsFromBackend = () => fetch('https://d2vxsg0gkt3p4m.cloudfront.net/react?op=get', {
+const getPeerReactionsFromBackend = () => fetch('/react?op=get', {
     method: 'POST',
     body: JSON.stringify({}),
     headers: {
@@ -27,38 +27,47 @@ const getPeerReactionsFromBackend = () => fetch('https://d2vxsg0gkt3p4m.cloudfro
     }
   });
 
-const withPeerReactions = WrappedComponent => props => {
+
+const withReactionStates = WrappedComponent => props => {
     const [peerReactions, updatePeerReactions] = useState(DEFAULT_REACTION_COUNTS);
+    const [ownReactions, updateOwnReactions] = useState(DEFAULT_REACTION_COUNTS);
+    const resetOwnReactions = useCallback(() => {
+        updateOwnReactions(DEFAULT_REACTION_COUNTS);
+    });
+
+    return <WrappedComponent 
+        peerReactions={peerReactions}
+        ownReactions={ownReactions}
+        updatePeerReactions={updatePeerReactions}
+        updateOwnReactions={updateOwnReactions}
+        resetOwnReactions={resetOwnReactions}
+    />
+}
+
+
+const withPeerReactionScheduler = WrappedComponent => ({updatePeerReactions, resetOwnReactions, ...restProps}) => {
     useEffect(() => {
         setInterval(() => {
             getPeerReactionsFromBackend()
             .then(response => response.json())
-            .then(updatePeerReactions);
+            .then(updatePeerReactions)
+            .then(() => resetOwnReactions());
         }, 3000);
     }, []);
 
-    return <WrappedComponent peerReactions={peerReactions}/>
+    return <WrappedComponent {...restProps}/>
 };
 
-const withReactionHandlers = WrappedComponent => props => {
-    const [reactions, updateReactions] = useState(DEFAULT_REACTION_COUNTS);
-    
-    const resetReactions = useCallback(debounce(() => {
-        updateReactions(DEFAULT_REACTION_COUNTS);
-    }, 200), []);
-
-    const sendAndResetReactions = useCallback(() => {
-        sendReactionsToBackend(reactions);
-        resetReactions();
-    }, [resetReactions, reactions]);
-
+const withOwnReactionHandlers = WrappedComponent => ({ peerReactions, ownReactions, updateOwnReactions }) => {
     const handleReaction = useCallback((reactionType) => {
-        updateReactions(reactions => ({...reactions, [reactionType]: reactions[reactionType]+1}));
-        sendAndResetReactions();
-    }, [reactions, sendAndResetReactions]);
+        const updatedReactions = {...ownReactions, [reactionType]: ownReactions[reactionType]+1};
+        updateOwnReactions(updatedReactions);
+        sendReactionsToBackend(updatedReactions);
+    }, [ownReactions, updateOwnReactions]);
 
-    return <WrappedComponent ownReactions={reactions} onReact={handleReaction} {...props}/>
+    return <WrappedComponent ownReactions={ownReactions} peerReactions={peerReactions} onReact={handleReaction}/>
 };
+
 
 const withAddedReactions = WrappedComponent => ({peerReactions, ownReactions, ...restProps}) => {
     const reactions = useMemo(() =>
@@ -71,7 +80,8 @@ const withAddedReactions = WrappedComponent => ({peerReactions, ownReactions, ..
 };
 
 export default compose(
-    withPeerReactions,
-    withReactionHandlers,
+    withReactionStates,
+    withPeerReactionScheduler,
+    withOwnReactionHandlers,
     withAddedReactions
 );
