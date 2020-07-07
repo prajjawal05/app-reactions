@@ -11,9 +11,7 @@ export const APPS_CONFIG = {
 }
 
 export const REACTION_TYPES = {
-    CLAP: "CLAP",
-    APPRECIATE: "APPRECIATE",
-    LAUGH: "LAUGH"
+    LOVE: "LOVE"
 };
 
 export const mobileAgents = [
