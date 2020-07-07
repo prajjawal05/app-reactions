@@ -1,13 +1,12 @@
 import React, { useCallback } from "react";
 import Fab from "@material-ui/core/Fab"
-import { amber } from '@material-ui/core/colors';
 import { makeStyles } from '@material-ui/core/styles';
+import { amber } from '@material-ui/core/colors';
 
 import ReactionIcon from "../ReactionIcon";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     root: {
-        backgroundColor: theme.palette.background.paper,
         height: "201px",
         width: "201px",
         textAlign: "center"

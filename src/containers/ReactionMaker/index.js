@@ -5,10 +5,16 @@ import {REACTION_TYPES} from "../../config/constants";
 
 import withHandlers from "./handlers";
 
+const REACTION_MAKERS_STYLE = {
+  position: "absolute",
+  right: "0px",
+  top: "0px",
+  height: "100%"
+};
 
-let REACTION_MAKER_STYLE = {
+const REACTION_BUTTONS_STYLE = {
   display: "flex",
-  justifyContent: "flex-end",
+  justifyContent: "space-around",
   alignItems: "center",
   flexDirection: "column",
   height: "100%"
@@ -16,8 +22,8 @@ let REACTION_MAKER_STYLE = {
 
 const ReactionMaker = ({onReact, reactions}) => {
   return (
-    <div style={{width: "100%"}}>
-      <div style={REACTION_MAKER_STYLE}>
+    <div style={REACTION_MAKERS_STYLE}>
+      <div style={REACTION_BUTTONS_STYLE}>
         {Object.values(REACTION_TYPES).map(reactionType => (
           <ReactionButton key={reactionType} reactionCount={reactions[reactionType]} reactionType={reactionType}
                           onClick={onReact}/>

@@ -1,24 +1,34 @@
 import React, {useMemo} from "react";
 import FloatingReaction from "../../components/FloatingReaction";
-import {REACTION_TYPES} from "../../config/constants";
+import {DEFAULT_REACTION_COUNTS, REACTION_TYPES} from "../../config/constants";
 import {usePrevious} from "../../hooks";
 
-const FloatingReactions = ({ containerRef, reactions: inputReactions }) => {
+const FloatingReactions = ({ containerRef, reactions: inputReactions, iconSize }) => {
   const boundaries = useMemo(() => containerRef.current.getBoundingClientRect(), [containerRef]);
-  const maxRight = useMemo(() => boundaries.right - boundaries.left - 40, [boundaries]);
+  const maxRight = useMemo(() => boundaries.right - boundaries.left - iconSize, [boundaries]);
 
-  const prevInputReactions = usePrevious(inputReactions) || 0;
-  const numNewReactions = inputReactions[REACTION_TYPES.LOVE] > prevInputReactions[REACTION_TYPES.LOVE] ?
-    inputReactions[REACTION_TYPES.LOVE] - prevInputReactions[REACTION_TYPES.LOVE]
-    : inputReactions[REACTION_TYPES.LOVE];
+  const prevInputReactions = usePrevious(inputReactions) || DEFAULT_REACTION_COUNTS;
+  const floatingReactions = useMemo(() => [], []);
 
-  const reactions = useMemo(() => [], []);
-  for (let i = 0; i < numNewReactions; i++) {
-    reactions.push(<FloatingReaction key={reactions.length + i} maxRight={maxRight} maxBottom={boundaries.bottom}/>)
-  }
-  return reactions
+  Object.values(REACTION_TYPES).forEach((reactionType) => {
+    const numNewReactions = inputReactions[reactionType] >= prevInputReactions[reactionType] ?
+      inputReactions[reactionType] - prevInputReactions[reactionType]
+      : inputReactions[reactionType];
+
+    for (let i = 0; i < numNewReactions; i++) {
+      floatingReactions.push(
+        <FloatingReaction
+          key={floatingReactions.length + i}
+          reactionType={reactionType}
+          maxRight={maxRight}
+          maxBottom={boundaries.bottom}
+        />
+      )
+    }
+  });
+
+  return floatingReactions
 };
 
 
-//TOdo: Remove Hardcoding of image at two places: 201px and 40px
 export default FloatingReactions;

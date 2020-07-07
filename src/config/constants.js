@@ -11,8 +11,15 @@ export const APPS_CONFIG = {
 }
 
 export const REACTION_TYPES = {
-    LOVE: "LOVE"
+    LOVE: "LOVE",
+    CLAP: "CLAP",
+    APPRECIATE: "APRRECIATE"
 };
+
+export const DEFAULT_REACTION_COUNTS = Object.values(REACTION_TYPES).reduce((acc, reactionType) => {
+    acc[reactionType] = 0;
+    return acc;
+} , {});
 
 export const mobileAgents = [
     /Android/i,

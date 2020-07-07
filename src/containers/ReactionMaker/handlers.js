@@ -1,13 +1,9 @@
 import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { debounce } from "debounce";
 import { compose } from "../../utils";
-import { REACTION_TYPES } from "../../config/constants";
+import { REACTION_TYPES, DEFAULT_REACTION_COUNTS } from "../../config/constants";
 
 
-const DEFAULT_REACTION_COUNTS = Object.values(REACTION_TYPES).reduce((acc, reactionType) => {
-    acc[reactionType] = 0;
-    return acc;
- } , {})
 
 // const getReactionsFromBackend = () => fetch('/react?op=get', {
 //     method: 'POST',
