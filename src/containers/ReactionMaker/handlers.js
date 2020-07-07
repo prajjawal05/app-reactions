@@ -5,7 +5,7 @@ import { REACTION_TYPES } from "../../config/constants";
 
 
 const DEFAULT_REACTION_COUNTS = Object.values(REACTION_TYPES).reduce((acc, reactionType) => {
-    acc[reactionType] = 0; 
+    acc[reactionType] = 0;
     return acc;
  } , {})
 
@@ -17,14 +17,13 @@ const DEFAULT_REACTION_COUNTS = Object.values(REACTION_TYPES).reduce((acc, react
 //     }
 //   });
 
-const withReactionStates = WrappedComponent => () => {
+const withReactionStates = WrappedComponent => ({reactionsToSend, updateReactionsToSend}) => {
     const [reactions, updateReactions] = useState(DEFAULT_REACTION_COUNTS);
-    const [reactionsToSend, updateReactionsToSend] = useState(DEFAULT_REACTION_COUNTS);
     const resetReactionsToSend = useCallback(() => {
         updateReactionsToSend(DEFAULT_REACTION_COUNTS);
     }, [updateReactionsToSend]);
 
-    return <WrappedComponent 
+    return <WrappedComponent
         reactions={reactions}
         updateReactions={updateReactions}
         reactionsToSend={reactionsToSend}
@@ -34,34 +33,34 @@ const withReactionStates = WrappedComponent => () => {
 }
 
 const withReactionHandlers = WrappedComponent => ({ reactions, reactionsToSend, updateReactions, updateReactionsToSend, resetReactionsToSend }) => {
-    const sendReactionsToBackend = useCallback(debounce(reactionToSendToBackend => fetch('/react?op=update', {
-        method: 'POST',
-        body: JSON.stringify(reactionToSendToBackend),
-        headers: {
-          'Content-type': 'application/json; charset=UTF-8'
-        }
-      })
-      .then(response => response.json())
-      .then(updateReactions)
-      .then(resetReactionsToSend), 
-    500), []);
-
-    useEffect(() => {
-        setInterval(() => {
-            sendReactionsToBackend(reactionsToSend); //intentional to prevent current state getting resetted
-        }, 3000);
-    }, []);
+    // const sendReactionsToBackend = useCallback(debounce(reactionToSendToBackend => fetch('/react?op=update', {
+    //     method: 'POST',
+    //     body: JSON.stringify(reactionToSendToBackend),
+    //     headers: {
+    //       'Content-type': 'application/json; charset=UTF-8'
+    //     }
+    //   })
+    //   .then(response => response.json())
+    //   .then(updateReactions)
+    //   .then(resetReactionsToSend),
+    // 500), []);
+    //
+    // useEffect(() => {
+    //     setInterval(() => {
+    //         sendReactionsToBackend(reactionsToSend); //intentional to prevent current state getting resetted
+    //     }, 3000);
+    // }, []);
 
     const handleReaction = useCallback((reactionType) => {
         const updatedReactionsToSend = {...reactionsToSend, [reactionType]: reactionsToSend[reactionType]+1};
         updateReactionsToSend(updatedReactionsToSend);
-        sendReactionsToBackend(updatedReactionsToSend);
+        // sendReactionsToBackend(updatedReactionsToSend);
     }, [reactionsToSend, updateReactionsToSend]);
 
     return <WrappedComponent allReactions={reactions} ownReactions={reactionsToSend} onReact={handleReaction}/>
 }
 
-    
+
 const withAddedReactions = WrappedComponent => ({allReactions, ownReactions, ...restProps}) => {
     const reactions = useMemo(() =>
         Object.keys(REACTION_TYPES).reduce((acc, reactionType) => {

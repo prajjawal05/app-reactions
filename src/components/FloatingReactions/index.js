@@ -19,4 +19,6 @@ const FloatingReactions = ({ containerRef, reactions: inputReactions }) => {
   return reactions
 };
 
+
+//TOdo: Remove Hardcoding of image at two places: 201px and 40px
 export default FloatingReactions;
