@@ -1,8 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import FloatingReactions from "../FloatingReactions"
 import ReactionMaker from "../../containers/ReactionMaker";
-import { isMobile } from "../../utils"
-import { REACTION_TYPES, DEFAULT_REACTION_COUNTS } from "../../config/constants";
+import { DEFAULT_REACTION_COUNTS } from "../../config/constants";
 import ZoomViewer from "../ZoomViewer";
 import "./style.css";
 
