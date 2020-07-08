@@ -1,75 +1,72 @@
-import React, { useState, useCallback, useEffect, useMemo } from "react";
+import React, {useState, useCallback, useEffect} from "react";
 import { debounce } from "debounce";
 import { compose } from "../../utils";
 import { REACTION_TYPES, DEFAULT_REACTION_COUNTS } from "../../config/constants";
 
 
+const withReactionStates = WrappedComponent => (props) => {
+  const [ownReactions, updateOwnReactions] = useState(DEFAULT_REACTION_COUNTS);
+  const [peerReactions, updatePeerReactions] = useState(DEFAULT_REACTION_COUNTS);
 
-// const getReactionsFromBackend = () => fetch('/react?op=get', {
-//     method: 'POST',
-//     body: JSON.stringify({}),
-//     headers: {
-//       'Content-type': 'application/json; charset=UTF-8'
-//     }
-//   });
+  const resetOwnReactions = useCallback(() => {
+    updateOwnReactions(DEFAULT_REACTION_COUNTS);
+  }, [updateOwnReactions]);
 
-const withReactionStates = WrappedComponent => ({reactionsToSend, updateReactionsToSend}) => {
-    const [reactions, updateReactions] = useState(DEFAULT_REACTION_COUNTS);
-    const resetReactionsToSend = useCallback(() => {
-        updateReactionsToSend(DEFAULT_REACTION_COUNTS);
-    }, [updateReactionsToSend]);
-
-    return <WrappedComponent
-        reactions={reactions}
-        updateReactions={updateReactions}
-        reactionsToSend={reactionsToSend}
-        updateReactionsToSend={updateReactionsToSend}
-        resetReactionsToSend={resetReactionsToSend}
+  return (
+    <WrappedComponent
+      {...props}
+      ownReactions={ownReactions}
+      updateOwnReactions={updateOwnReactions}
+      resetOwnReactions={resetOwnReactions}
+      peerReactions={peerReactions}
+      updatePeerReactions={updatePeerReactions}
     />
+  );
+};
+
+const withReactionHandlers = WrappedComponent => ({ ownReactions, updateOwnReactions, resetOwnReactions, updatePeerReactions, ...restProps }) => {
+  const sendReactionsToBackend = useCallback(debounce(reactionToSendToBackend => fetch('/react?op=update', {
+      method: 'POST',
+      body: JSON.stringify(reactionToSendToBackend),
+      headers: {
+        'Content-type': 'application/json; charset=UTF-8'
+      }
+    }).then(response => response.json())
+      .then(updatePeerReactions)
+      .then(resetOwnReactions),
+    500), []);
+
+  useEffect(() => {
+    setInterval(() => {
+      sendReactionsToBackend(ownReactions); //intentional to prevent current state getting resetted
+    }, 3000);
+  }, []);
+
+  const handleReaction = useCallback((reactionType) => {
+    const updatedOwnReactions = {...ownReactions, [reactionType]: ownReactions[reactionType] + 1};
+    updateOwnReactions(updatedOwnReactions);
+    sendReactionsToBackend(updatedOwnReactions);
+  }, [ownReactions, updateOwnReactions]);
+
+  return <WrappedComponent {...restProps} ownReactions={ownReactions} onReact={handleReaction}/>
 }
 
-const withReactionHandlers = WrappedComponent => ({ reactions, reactionsToSend, updateReactions, updateReactionsToSend, resetReactionsToSend }) => {
-    // const sendReactionsToBackend = useCallback(debounce(reactionToSendToBackend => fetch('/react?op=update', {
-    //     method: 'POST',
-    //     body: JSON.stringify(reactionToSendToBackend),
-    //     headers: {
-    //       'Content-type': 'application/json; charset=UTF-8'
-    //     }
-    //   })
-    //   .then(response => response.json())
-    //   .then(updateReactions)
-    //   .then(resetReactionsToSend),
-    // 500), []);
-    //
-    // useEffect(() => {
-    //     setInterval(() => {
-    //         sendReactionsToBackend(reactionsToSend); //intentional to prevent current state getting resetted
-    //     }, 3000);
-    // }, []);
 
-    const handleReaction = useCallback((reactionType) => {
-        const updatedReactionsToSend = {...reactionsToSend, [reactionType]: reactionsToSend[reactionType]+1};
-        updateReactionsToSend(updatedReactionsToSend);
-        // sendReactionsToBackend(updatedReactionsToSend);
-    }, [reactionsToSend, updateReactionsToSend]);
-
-    return <WrappedComponent allReactions={reactions} ownReactions={reactionsToSend} onReact={handleReaction}/>
-}
-
-
-const withAddedReactions = WrappedComponent => ({allReactions, ownReactions, ...restProps}) => {
-    const reactions = useMemo(() =>
-        Object.keys(REACTION_TYPES).reduce((acc, reactionType) => {
-        acc[reactionType] = allReactions[reactionType] + ownReactions[reactionType]
+const withAddedReactions = WrappedComponent => ({ peerReactions, ownReactions, updateReactions, ...restProps}) => {
+  useEffect(() => {
+    updateReactions(
+      Object.keys(REACTION_TYPES).reduce((acc, reactionType) => {
+        acc[reactionType] = peerReactions[reactionType] + ownReactions[reactionType]
         return acc;
-        }, {...DEFAULT_REACTION_COUNTS}
-    ),[ownReactions, allReactions]);
+      }, {...DEFAULT_REACTION_COUNTS})
+    );
+  }, [ownReactions, peerReactions, updateReactions]);
 
-    return <WrappedComponent reactions={reactions} {...restProps}/>
+  return <WrappedComponent {...restProps}/>
 };
 
 export default compose(
-    withReactionStates,
-    withReactionHandlers,
-    withAddedReactions
+  withReactionStates,
+  withReactionHandlers,
+  withAddedReactions
 );

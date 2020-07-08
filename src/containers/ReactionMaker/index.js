@@ -5,7 +5,7 @@ import {REACTION_TYPES} from "../../config/constants";
 import withHandlers from "./handlers";
 import "./style.css"
 
-const ReactionMaker = ({onReact, reactions}) => {
+const ReactionMaker = ({ onReact, reactions }) => {
   return (
     <div className={"reactionMakerContainer"}>
       <div className={"reactionButtons"}>

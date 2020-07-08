@@ -6,7 +6,7 @@ import ZoomViewer from "../ZoomViewer";
 import "./style.css";
 
 function App() {
-  const [reactionsToSend, updateReactionsToSend] = useState(DEFAULT_REACTION_COUNTS);
+  const [reactions, updateReactions] = useState(DEFAULT_REACTION_COUNTS);
 
   const containerRef = useRef(null);
   const [forwardedRef, setRef] = useState(null);
@@ -16,9 +16,9 @@ function App() {
 
   return (
     <div className={"container"} ref={containerRef}>
-        {forwardedRef && <FloatingReactions containerRef={forwardedRef} reactions={reactionsToSend} iconSize={40}/>}
+        {forwardedRef && <FloatingReactions containerRef={forwardedRef} reactions={reactions} iconSize={40}/>}
         <ZoomViewer/>
-        <ReactionMaker reactionsToSend={reactionsToSend} updateReactionsToSend={updateReactionsToSend}/>
+        <ReactionMaker reactions={reactions} updateReactions={updateReactions}/>
     </div>
   );
 }
