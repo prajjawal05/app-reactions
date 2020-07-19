@@ -2,27 +2,31 @@ import React, {useCallback} from "react";
 import Fab from "@material-ui/core/Fab"
 import {makeStyles} from '@material-ui/core/styles';
 import {amber} from '@material-ui/core/colors';
+import {isMobile} from "../../utils";
+import {ICON_SIZES} from "../../config/constants";
 
 import ReactionIcon from "../ReactionIcon";
 
+
+//Todo: iconSize should have been dynamic
 const useStyles = makeStyles(() => ({
   root: {
-    height: "201px",
-    width: "201px",
+    height: isMobile ? ICON_SIZES.MOBILE : ICON_SIZES.DESKTOP,
+    width: isMobile ? ICON_SIZES.MOBILE : ICON_SIZES.DESKTOP,
     textAlign: "center"
   },
   button: {
     width: "80%",
     height: "80%",
-    '&:hover': {
-      backgroundColor: amber[300],
-      width: "100%",
-      height: "100%"
-    },
-    '&:active': {
-      backgroundColor: amber[700],
-      width: "100%",
-      height: "100%"
+    ...!isMobile && {
+      '&:hover': {
+        backgroundColor: amber[300],
+        width: "100%",
+        height: "100%"
+      },
+      '&:active': {
+        backgroundColor: amber[700]
+      }
     }
   },
   count: {

@@ -1,13 +1,14 @@
 import React from "react";
 import ReactionButton from "../../components/ReactionButton";
 import {REACTION_TYPES} from "../../config/constants";
+import {isMobile} from "../../utils";
 
+import {ReactionMakerContainer} from "./style"
 import withHandlers from "./handlers";
-import "./style.css"
 
-const ReactionMaker = ({ onReact }) => {
+const ReactionMaker = ({onReact}) => {
   return (
-    <div className={"reactionMakerContainer"}>
+    <ReactionMakerContainer isMobile={isMobile}>
       <div className={"reactionButtons"}>
         {Object.values(REACTION_TYPES).map(reactionType => (
           <ReactionButton
@@ -17,7 +18,7 @@ const ReactionMaker = ({ onReact }) => {
           />
         ))}
       </div>
-    </div>
+    </ReactionMakerContainer>
   )
 };
 

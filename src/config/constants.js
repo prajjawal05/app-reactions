@@ -28,4 +28,9 @@ export const mobileAgents = [
     /iPod/i,
     /BlackBerry/i,
     /Windows Phone/i
-  ]
+  ];
+
+export const ICON_SIZES = {
+  MOBILE: "101px",
+  DESKTOP: "201px"
+};

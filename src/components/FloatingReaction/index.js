@@ -5,7 +5,7 @@ import ReactionIcon from "../../components/ReactionIcon";
 
 import {REACTION_TYPES} from "../../config/constants";
 
-import './style.css';
+import {StyledFloater} from "./style";
 
 const addHandlers = WrappedComponent => props => {
   const [isFloated, updatedWhetherFloated] = useState(false);
@@ -44,9 +44,9 @@ const FloatingReaction = ({onAnimationComplete, isFloated, reactionType = REACTI
   return (
     !isFloated &&
     <TweenOne animation={animationProps}>
-      <span className={"move"}>
+      <StyledFloater duration={3000 + 1000 * Math.random()}>
         <ReactionIcon reactionType={reactionType}/>
-      </span>
+      </StyledFloater>
     </TweenOne>
   );
 };
