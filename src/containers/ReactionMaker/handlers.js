@@ -1,40 +1,51 @@
 import React, {useState, useCallback, useEffect} from "react";
 import {debounce} from "debounce";
 import {compose} from "../../utils";
-import {DEFAULT_REACTION_COUNTS, REACTION_TYPES} from "../../config/constants";
+import {REACTION_TYPES} from "../../config/constants";
 import {useNetworkHandlers} from "./hooks/useNetworkHandlers";
 import {useSyncInterval} from "./hooks/useSyncInterval";
+import {CLIENT_REACTION_TYPES, DEFAULT_CLIENT_REACTIONS} from "./config/constants";
 
 
-const withReactionStates = WrappedComponent => (props) => {
-  const [ownReactions, updateOwnReactions] = useState(DEFAULT_REACTION_COUNTS);
-  const resetOwnReactions = useCallback(() => {
-    updateOwnReactions(DEFAULT_REACTION_COUNTS);
-  }, [updateOwnReactions]);
+const withReactionStates = WrappedComponent => ({onReactionsUpdate}) => {
+  const [clientReactions, updateClientReactions] = useState(DEFAULT_CLIENT_REACTIONS);
+
+  useEffect(() => {
+    const updatedReactions = Object.keys(REACTION_TYPES).reduce((agg, reactionType) => {
+        agg[reactionType] = clientReactions[CLIENT_REACTION_TYPES.OWN][reactionType] +
+          clientReactions[CLIENT_REACTION_TYPES.PEER][reactionType];
+        return agg;
+      }, {});
+    onReactionsUpdate(updatedReactions);
+  }, [JSON.stringify(clientReactions)]);
 
   return (
     <WrappedComponent
-      {...props}
-      ownReactions={ownReactions}
-      updateOwnReactions={updateOwnReactions}
-      resetOwnReactions={resetOwnReactions}
+      clientReactions={clientReactions}
+      onClientReactionsUpdate={updateClientReactions}
     />
   );
 };
 
 
-const withReactionHandlers = WrappedComponent => ({reactions, onReactionsUpdate, ownReactions, updateOwnReactions, resetOwnReactions}) => {
-  const {sendReactions, getReactions} = useNetworkHandlers({resetOwnReactions, onReactionsUpdate});
+const withReactionHandlers = WrappedComponent => ({onReactionsUpdate, onClientReactionsUpdate}) => {
+  const {sendReactions, getReactions} = useNetworkHandlers({onClientReactionsUpdate});
 
-  useSyncInterval(getReactions, 3000);
+  useSyncInterval(getReactions, 1000);
 
   const handleReaction = useCallback((reactionType) => {
-    const updatedOwnReactions = {...ownReactions, [reactionType]: ownReactions[reactionType] + 1};
-    const updatedReactions = {...reactions, [reactionType]: reactions[reactionType] + 1};
-    updateOwnReactions(updatedOwnReactions);
-    onReactionsUpdate(updatedReactions);
-    sendReactions(updatedOwnReactions);
-  }, [reactions, ownReactions, onReactionsUpdate, updateOwnReactions]);
+    onClientReactionsUpdate((clientReactionsInState) => {
+      const updatedOwnReaction = {
+        ...clientReactionsInState[CLIENT_REACTION_TYPES.OWN],
+        [reactionType]: clientReactionsInState[CLIENT_REACTION_TYPES.OWN][reactionType] + 1
+      };
+      sendReactions(updatedOwnReaction);
+      return {
+        ...clientReactionsInState,
+        [CLIENT_REACTION_TYPES.OWN]: updatedOwnReaction
+      };
+    })
+  }, [sendReactions]);
 
   return <WrappedComponent onReact={handleReaction}/>
 };

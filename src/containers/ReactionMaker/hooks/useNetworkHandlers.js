@@ -1,7 +1,9 @@
 import {useCallback} from "react";
 import {debounce} from "debounce";
+import {DEFAULT_REACTION_COUNTS} from "../../../config/constants";
+import {CLIENT_REACTION_TYPES} from "../config/constants";
 
-export const useNetworkHandlers = ({resetOwnReactions, onReactionsUpdate}) => {
+export const useNetworkHandlers = ({onClientReactionsUpdate}) => {
   const sendReactions = useCallback(debounce(
     (reactionsToSend) => {
       fetch('/react?op=update', {
@@ -10,7 +12,13 @@ export const useNetworkHandlers = ({resetOwnReactions, onReactionsUpdate}) => {
         headers: {
           'Content-type': 'application/json; charset=UTF-8'
         }
-      }).then(resetOwnReactions)
+      }).then(response => response.json())
+        .then(peerReactions => {
+          onClientReactionsUpdate({
+            [CLIENT_REACTION_TYPES.PEER]: peerReactions,
+            [CLIENT_REACTION_TYPES.OWN]: DEFAULT_REACTION_COUNTS
+          })
+        })
     }, 1000), []);
 
   const getReactions = useCallback(
@@ -21,10 +29,14 @@ export const useNetworkHandlers = ({resetOwnReactions, onReactionsUpdate}) => {
         headers: {
           'Content-type': 'application/json; charset=UTF-8'
         }
-      }).then(response => response.json());
-      onReactionsUpdate(response);
-      resetOwnReactions();
-    }, [onReactionsUpdate]);
+      }).then(response => response.json())
+        .then(peerReactions =>
+          onClientReactionsUpdate((clientReactions) => ({
+            ...clientReactions,
+            [CLIENT_REACTION_TYPES.PEER]: peerReactions
+          }))
+        );
+    }, [onClientReactionsUpdate]);
 
   return {
     getReactions,
