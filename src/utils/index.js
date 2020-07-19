@@ -5,6 +5,10 @@ export const compose = (...funcs) =>
 
 
 export const isMobile = mobileAgents.some(
-    (toMatchItem) => 
+    (toMatchItem) =>
       navigator.userAgent.match(toMatchItem)
   );
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}

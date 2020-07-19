@@ -11,14 +11,14 @@ const FloatingReactions = ({ containerRef, reactions: inputReactions, iconSize }
   const floatingReactions = useMemo(() => [], []);
 
   Object.values(REACTION_TYPES).forEach((reactionType) => {
-    const numNewReactions = inputReactions[reactionType] >= prevInputReactions[reactionType] ?
+    const numNewReactions = inputReactions[reactionType] > prevInputReactions[reactionType] ?
       inputReactions[reactionType] - prevInputReactions[reactionType]
-      : inputReactions[reactionType];
+      : 0;
 
-    for (let i = 0; i < numNewReactions; i++) {
+    for (let i = 0; i < Math.min(numNewReactions, 25); i++) {
       floatingReactions.push(
         <FloatingReaction
-          key={floatingReactions.length + i}
+          key={`${reactionType}|${floatingReactions.length+i}`}
           reactionType={reactionType}
           maxRight={maxRight}
           maxBottom={boundaries.bottom}

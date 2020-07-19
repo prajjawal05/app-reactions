@@ -11,10 +11,10 @@ export const APPS_CONFIG = {
 }
 
 export const REACTION_TYPES = {
-    // LOVE: "LOVE",
-    CLAP: "CLAP",
-    APPRECIATE: "APPRECIATE",
-    LAUGH: "LAUGH"
+    LOVE: "LOVE",
+    CLAP: "CLAP"
+    // APPRECIATE: "APPRECIATE"
+    // LAUGH: "LAUGH"
 };
 
 export const DEFAULT_REACTION_COUNTS = Object.values(REACTION_TYPES).reduce((acc, reactionType) => {
