@@ -3,7 +3,7 @@ import Fab from "@material-ui/core/Fab"
 import {makeStyles} from '@material-ui/core/styles';
 import {amber} from '@material-ui/core/colors';
 import {isMobile} from "../../utils";
-import {ICON_SIZES} from "../../config/constants";
+import {ICON_SIZES} from "../../constants";
 
 import ReactionIcon from "../ReactionIcon";
 

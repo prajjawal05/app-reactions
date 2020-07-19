@@ -1,4 +1,4 @@
-import { mobileAgents } from "../config/constants"
+import { mobileAgents } from "../constants"
 
 export const compose = (...funcs) =>
   funcs.reduce((a, b) => (...args) => a(b(...args)), arg => arg);
@@ -9,6 +9,4 @@ export const isMobile = mobileAgents.some(
       navigator.userAgent.match(toMatchItem)
   );
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+export const createUrl = path => match => `${match.url}${path}`;

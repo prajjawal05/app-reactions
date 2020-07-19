@@ -1,6 +1,6 @@
 import React from "react";
 import ReactionButton from "../../components/ReactionButton";
-import {REACTION_TYPES} from "../../config/constants";
+import {REACTION_TYPES} from "../../constants";
 import {isMobile} from "../../utils";
 
 import {ReactionMakerContainer} from "./style"

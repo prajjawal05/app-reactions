@@ -3,7 +3,7 @@ import TweenOne from "rc-tween-one";
 
 import ReactionIcon from "../../components/ReactionIcon";
 
-import {REACTION_TYPES} from "../../config/constants";
+import {REACTION_TYPES} from "../../constants";
 
 import {StyledFloater} from "./style";
 

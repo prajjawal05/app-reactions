@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import {ICON_SIZES} from "../../config/constants";
+import {ICON_SIZES} from "../../constants";
 
 export const ReactionMakerContainer = styled.div`
   position: absolute;

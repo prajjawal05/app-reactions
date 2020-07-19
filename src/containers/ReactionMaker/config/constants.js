@@ -1,4 +1,4 @@
-import {DEFAULT_REACTION_COUNTS} from "../../../config/constants";
+import {DEFAULT_REACTION_COUNTS} from "../../../constants";
 
 export const CLIENT_REACTION_TYPES = {
   PEER: "PEER",

@@ -1,6 +1,6 @@
 import {useCallback} from "react";
 import {debounce} from "debounce";
-import {DEFAULT_REACTION_COUNTS} from "../../../config/constants";
+import {DEFAULT_REACTION_COUNTS} from "../../../constants";
 import {CLIENT_REACTION_TYPES} from "../config/constants";
 
 export const useNetworkHandlers = ({onClientReactionsUpdate}) => {

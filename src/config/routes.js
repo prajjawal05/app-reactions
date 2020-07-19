@@ -1,5 +1,6 @@
-import { APPS } from "./constants";
+import { APPS } from "../constants";
 
 export const Routes = {
-    [APPS.ZOOM_MEETING]: "/zoom/meeting/:id"
-}
+    [APPS.NO_APP]: "",
+    [APPS.ZOOM_MEETING]: "zoom/:meetingId"
+};

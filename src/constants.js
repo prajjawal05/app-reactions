@@ -1,14 +1,7 @@
-import ZoomViewer from "../components/ZoomViewer"
-
 export const APPS = {
-    ZOOM_MEETING: "ZOOM_MEETING"
+    ZOOM_MEETING: "ZOOM_MEETING",
+    NO_APP: "NO_APP"
 };
-
-export const APPS_CONFIG = {
-    [APPS.ZOOM_MEETING]: {
-        render: ZoomViewer
-    }
-}
 
 export const REACTION_TYPES = {
     LOVE: "LOVE",

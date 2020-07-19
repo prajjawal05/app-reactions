@@ -1,6 +1,6 @@
 import React, {useMemo} from "react";
 import FloatingReaction from "../../components/FloatingReaction";
-import {DEFAULT_REACTION_COUNTS, REACTION_TYPES} from "../../config/constants";
+import {DEFAULT_REACTION_COUNTS, REACTION_TYPES} from "../../constants";
 import {usePrevious} from "../../hooks";
 
 const FloatingReactions = ({ containerRef, reactions: inputReactions, iconSize }) => {

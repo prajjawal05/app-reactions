@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { REACTION_TYPES } from "../../config/constants";
+import { REACTION_TYPES } from "../../constants";
 import appreciationImage from "../../assets/appreciationImage.png";
 import clapImage from "../../assets/clapImage.png";
 import laughingImage from "../../assets/laughingImage.png";

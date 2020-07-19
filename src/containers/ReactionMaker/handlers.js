@@ -1,7 +1,7 @@
 import React, {useState, useCallback, useEffect} from "react";
 import {debounce} from "debounce";
 import {compose} from "../../utils";
-import {REACTION_TYPES} from "../../config/constants";
+import {REACTION_TYPES} from "../../constants";
 import {useNetworkHandlers} from "./hooks/useNetworkHandlers";
 import {useSyncInterval} from "./hooks/useSyncInterval";
 import {CLIENT_REACTION_TYPES, DEFAULT_CLIENT_REACTIONS} from "./config/constants";
